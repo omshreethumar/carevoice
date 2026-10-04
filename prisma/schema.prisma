@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum PaymentMethod {
+  CASH
+  UPI
+  CARD
+  BANK_TRANSFER
+  OTHER
+}
+
+enum BillStatus {
+  UPCOMING
+  OVERDUE
+  PAID
+}
+
+enum BillFrequency {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+model User {
+  id                   String   @id @default(uuid())
+  name                 String
+  email                String   @unique
+  passwordHash         String
+  monthlyIncomeTarget  Decimal? @db.Decimal(14, 2)
+  currency             String   @default("INR")
+  financialGoal        String?
+  monthlySavingsTarget Decimal? @db.Decimal(14, 2)
+  isDemo               Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+
+  transactions      Transaction[]
+  budgets           Budget[]
+  goals             SavingsGoal[]
+  bills             Bill[]
+  insights          FinancialInsight[]
+  conversations     AIConversation[]
+  receipts          Receipt[]
+  importedBatches   ImportBatch[]
+  emergencyFund     EmergencyFund?
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount        Decimal         @db.Decimal(14, 2)
+  type          TransactionType
+  category      String
+  description   String
+  date          DateTime
+  paymentMethod PaymentMethod   @default(UPI)
+  notes         String?
+  importHash    String?
+  source        String          @default("manual")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, type])
+  @@index([userId, importHash])
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  String
+  amount    Decimal  @db.Decimal(14, 2)
+  month     Int
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, category, month, year])
+  @@index([userId, year, month])
+}
+
+model SavingsGoal {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  targetAmount  Decimal  @db.Decimal(14, 2)
+  currentAmount Decimal  @db.Decimal(14, 2) @default(0)
+  targetDate    DateTime
+  category      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Bill {
+  id          String        @id @default(uuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  amount      Decimal       @db.Decimal(14, 2)
+  dueDate     DateTime
+  category    String
+  recurring   Boolean       @default(false)
+  frequency   BillFrequency?
+  status      BillStatus    @default(UPCOMING)
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId, dueDate])
+  @@index([userId, status])
+}
+
+model FinancialInsight {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  severity  String   @default("info")
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model AIConversation {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String      @default("Pocket AI chat")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  messages  AIMessage[]
+
+  @@index([userId])
+}
+
+model AIMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String
+  createdAt      DateTime       @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model Receipt {
+  id                 String    @id @default(uuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName           String
+  filePath           String
+  mimeType           String
+  status             String    @default("pending")
+  merchantName       String?
+  amount             Decimal?  @db.Decimal(14, 2)
+  date               DateTime?
+  items              Json?
+  suggestedCategory  String?
+  rawExtraction      Json?
+  errorMessage       String?
+  transactionId      String?
+  createdAt          DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model ImportBatch {
+  id          String                @id @default(uuid())
+  userId      String
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName    String
+  totalRows   Int
+  validRows   Int
+  invalidRows Int
+  imported    Int                   @default(0)
+  createdAt   DateTime              @default(now())
+  rows        ImportedTransaction[]
+
+  @@index([userId])
+}
+
+model ImportedTransaction {
+  id          String      @id @default(uuid())
+  batchId     String
+  batch       ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  date        String?
+  description String?
+  amount      String?
+  type        String?
+  category    String?
+  valid       Boolean     @default(false)
+  errors      Json?
+  importHash  String?
+  createdAt   DateTime    @default(now())
+}
+
+model EmergencyFund {
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthlyEssential     Decimal  @db.Decimal(14, 2)
+  targetMonths         Int      @default(6)
+  currentAmount        Decimal  @db.Decimal(14, 2) @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}

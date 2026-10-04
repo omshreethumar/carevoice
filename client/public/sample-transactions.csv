@@ -1,0 +1,5 @@
+Date,Description,Amount,Type,Category
+2026-08-01,Part-time salary,32000,INCOME,Salary
+2026-08-03,Swiggy weekend order,620,EXPENSE,Food
+2026-08-04,Uber to campus,180,EXPENSE,Transport
+2026-08-05,Netflix,649,EXPENSE,Subscriptions

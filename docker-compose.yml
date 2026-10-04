@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pocket-planner-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pocket_planner
+    ports:
+      - "5432:5432"
+    volumes:
+      - pocket_planner_pgdata:/var/lib/postgresql/data
+
+volumes:
+  pocket_planner_pgdata:
