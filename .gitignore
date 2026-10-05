@@ -13,3 +13,6 @@ server/uploads/
 ml-service/__pycache__/
 ml-service/.venv/
 *.pyc
+
+client-carevoice/
+client-pocket-planner-backup/

@@ -1,26 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./index.html', './src/**/*.{js,jsx}'],
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-      },
-      colors: {
-        brand: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
-        },
-      },
-      boxShadow: {
-        card: '0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06)',
-      },
-    },
-  },
-  plugins: [],
-};
+export default {content:['./index.html','./src/**/*.{js,jsx}'],theme:{extend:{
+fontFamily:{sans:['"Plus Jakarta Sans"','system-ui','sans-serif']},
+colors:{brand:{50:'#effaf8',100:'#d5f2ee',500:'#14a89a',600:'#0e8a7e',700:'#0c6e65',900:'#0b3d3a'}},
+keyframes:{up:{'0%':{opacity:0,transform:'translateY(12px)'},'100%':{opacity:1,transform:'none'}},ring:{'0%':{transform:'scale(1)',opacity:.6},'100%':{transform:'scale(2)',opacity:0}}},
+animation:{up:'up .5s ease both',ring:'ring 1.4s ease-out infinite'}}},plugins:[]}
