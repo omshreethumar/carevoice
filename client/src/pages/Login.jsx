@@ -29,7 +29,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <form onSubmit={onSubmit} className="card w-full max-w-md p-8">
         <div className="mb-6 flex items-center gap-2 font-bold">
-          <Wallet className="text-brand-600" /> Pocket Planner
+          <Wallet className="text-brand-600" /> CareVoice
         </div>
         <h1 className="text-2xl font-bold">Welcome back</h1>
         <p className="mt-1 text-sm text-slate-500">Sign in to your finance workspace.</p>
@@ -81,3 +81,4 @@ export default function Login() {
     </div>
   );
 }
+

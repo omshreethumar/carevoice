@@ -14,7 +14,7 @@ import { useState } from 'react';
 
 const features = [
   { icon: BarChart3, title: 'Live dashboard', text: 'See balance, cash flow, budgets, and savings in one calm view.' },
-  { icon: Sparkles, title: 'Pocket AI', text: 'Ask questions about your real spending, bills, and goals — never generic advice.' },
+  { icon: Sparkles, title: 'CareVoice AI', text: 'Ask questions about your real spending, bills, and goals — never generic advice.' },
   { icon: Target, title: 'Goals that stick', text: 'Track a laptop, rent deposit, or emergency fund with monthly targets.' },
   { icon: Shield, title: 'Built for irregular income', text: 'Freelance, stipend, or part-time pay — plan around variable months.' },
 ];
@@ -23,13 +23,13 @@ const steps = [
   { n: '01', t: 'Create your account', d: 'Set currency, income target, and a savings goal in minutes.' },
   { n: '02', t: 'Track money', d: 'Add transactions, import CSV statements, or scan receipts.' },
   { n: '03', t: 'Stay on budget', d: 'Category budgets warn you before you overspend.' },
-  { n: '04', t: 'Ask Pocket AI', d: 'Get insights grounded in your actual numbers.' },
+  { n: '04', t: 'Ask CareVoice AI', d: 'Get insights grounded in your actual numbers.' },
 ];
 
 const faqs = [
-  { q: 'Is this professional financial advice?', a: 'No. Pocket Planner is an educational money manager. Scores and AI replies are not a substitute for a licensed advisor.' },
+  { q: 'Is this professional financial advice?', a: 'No. CareVoice is an educational money manager. Scores and AI replies are not a substitute for a licensed advisor.' },
   { q: 'Is my data isolated?', a: 'Yes. Every transaction, budget, bill, and chat belongs to your user account and cannot be accessed by other users.' },
-  { q: 'Do I need an OpenAI key?', a: 'The app runs without it. Pocket AI and receipt extraction need OPENAI_API_KEY on the server only — never in the browser.' },
+  { q: 'Do I need an OpenAI key?', a: 'The app runs without it. CareVoice AI and receipt extraction need OPENAI_API_KEY on the server only — never in the browser.' },
   { q: 'What is Demo Mode?', a: 'Try Demo loads a fictional account for Alex Sharma. It is separate from real registrations.' },
 ];
 
@@ -59,7 +59,7 @@ export default function Landing() {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
             <Wallet size={18} />
           </span>
-          Pocket Planner
+          CareVoice
         </div>
         <div className="flex items-center gap-3">
           <Link to="/login" className="text-sm font-medium text-slate-600">
@@ -81,7 +81,7 @@ export default function Landing() {
               Turn Irregular Income Into Stable Savings
             </h1>
             <p className="mt-4 max-w-xl text-lg text-slate-600">
-              Pocket Planner helps students and young professionals track money, control spending, build savings
+              CareVoice helps students and young professionals track money, control spending, build savings
               goals, and make smarter financial decisions with AI.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -106,7 +106,7 @@ export default function Landing() {
               ))}
             </div>
             <div className="mt-4 rounded-xl bg-brand-50 p-4 text-sm text-brand-900">
-              Pocket AI: Reducing food delivery by ₹1,500 could help you hit your laptop goal sooner.
+              CareVoice AI: Reducing food delivery by ₹1,500 could help you hit your laptop goal sooner.
             </div>
           </div>
         </div>
@@ -114,9 +114,9 @@ export default function Landing() {
 
       <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-2xl font-bold">Why Pocket Planner?</h2>
+          <h2 className="text-2xl font-bold">Why CareVoice?</h2>
           <p className="mt-2 max-w-2xl text-slate-600">
-            Spreadsheets break when income is uneven. Pocket Planner combines tracking, budgets, bills, and an AI
+            Spreadsheets break when income is uneven. CareVoice combines tracking, budgets, bills, and an AI
             assistant that reads your actual ledger.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -152,7 +152,7 @@ export default function Landing() {
             <Bot className="text-brand-600" />
             <h3 className="mt-3 text-lg font-bold">AI-powered insights</h3>
             <p className="mt-2 text-sm text-slate-600">
-              Pocket AI uses your transactions, budgets, bills, and goals. It will not invent numbers if history is thin.
+              CareVoice AI uses your transactions, budgets, bills, and goals. It will not invent numbers if history is thin.
             </p>
           </div>
           <div className="card p-6">
@@ -221,7 +221,7 @@ export default function Landing() {
 
       <footer className="border-t border-slate-100 py-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Pocket Planner. Educational use only.</p>
+          <p>© {new Date().getFullYear()} CareVoice. Educational use only.</p>
           <p className="flex items-center gap-2">
             <CheckCircle2 size={16} /> JWT auth · PostgreSQL · Server-side AI
           </p>
@@ -230,3 +230,4 @@ export default function Landing() {
     </div>
   );
 }
+

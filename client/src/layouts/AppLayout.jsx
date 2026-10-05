@@ -42,7 +42,7 @@ export default function AppLayout() {
             <Wallet size={18} />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-900">Pocket Planner</p>
+            <p className="text-sm font-bold text-slate-900">CareVoice</p>
             <p className="text-xs text-slate-500">AI finance manager</p>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function AppLayout() {
       <div className="lg:pl-64">
         <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
           <div className="flex items-center gap-2 font-bold">
-            <Wallet className="text-brand-600" size={20} /> Pocket Planner
+            <Wallet className="text-brand-600" size={20} /> CareVoice
           </div>
           <button
             type="button"
@@ -124,3 +124,4 @@ export default function AppLayout() {
     </div>
   );
 }
+
