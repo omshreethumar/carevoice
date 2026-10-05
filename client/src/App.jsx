@@ -1,7 +1,8 @@
 import {useState,useMemo,useEffect} from 'react';
 import {LayoutDashboard,FileText,Pill,CalendarDays,Mic,Users,Settings as Cog,Volume2,Check,Phone,PhoneOff,Sparkles,Upload,AlertTriangle,Utensils,Footprints,FlaskConical,Stethoscope,HeartPulse,X,ShieldCheck,Clock,Loader2,Bell,Sunrise,Sun,Moon,ListChecks,CheckCircle2,Hourglass} from 'lucide-react';
 import {DEMO_DOC} from './data/demo.js';import {simplify,SAY} from './data/i18n.js';
-import {extractDocument,explainTerm} from './services/ai.js';import {speak,listen,parseYesNo,LANGS} from './services/voice.js';import {placeCall} from './services/phone.js';
+import {extractDocument,explainTerm} from './services/ai.js';
+import {registerUser,loginUser,demoLogin,getCurrentUser,logoutUser} from './services/api.js';import {speak,listen,parseYesNo,LANGS} from './services/voice.js';import {placeCall} from './services/phone.js';
 
 const DISCLAIMER='CareVoice helps patients understand healthcare instructions. It does not replace a doctor.';
 const toMin=t=>{const[h,m]=t.split(':');return +h*60+ +m};
@@ -37,16 +38,92 @@ function Landing({onDemo,onUpload,busy}){
       <div className="mt-14 grid gap-4 text-left sm:grid-cols-3">{[[FileText,'1. Upload','Medicines, timings, diet, tests, appointments and warnings are pulled out.'],[Sparkles,'2. Simplify','Medical language becomes plain words, always shown next to the original.'],[Volume2,'3. Remind','A daily timeline, voice reminders and a friendly check-in call.']].map(([I,h,p])=><Card key={h}><I className="mb-3 h-8 w-8 text-brand-600"/><h3 className="text-xl font-bold">{h}</h3><p className="text-slate-500">{p}</p></Card>)}</div>
       <div className="mt-10 flex justify-center"><Disclaimer/></div></section></div>;}
 
+
+function AuthScreen({onAuthenticated}){
+  const [mode,setMode]=useState('login');
+  const [name,setName]=useState('');
+  const [email,setEmail]=useState('');
+  const [password,setPassword]=useState('');
+  const [confirmPassword,setConfirmPassword]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState('');
+
+  const submit=async(e)=>{
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try{
+      const result=mode==='login'
+        ? await loginUser({email,password,rememberMe:true})
+        : await registerUser({name,email,password,confirmPassword});
+      localStorage.setItem('carevoice_token',result.data.token);
+      localStorage.setItem('carevoice_user',JSON.stringify(result.data.user));
+      onAuthenticated(result.data.user);
+    }catch(err){
+      setError(err.message);
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  const demo=async()=>{
+    setError('');
+    setLoading(true);
+    try{
+      const result=await demoLogin();
+      localStorage.setItem('carevoice_token',result.data.token);
+      localStorage.setItem('carevoice_user',JSON.stringify(result.data.user));
+      onAuthenticated(result.data.user);
+    }catch(err){
+      setError(err.message);
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  return <div className="min-h-screen bg-gradient-to-b from-brand-50 via-white to-sky-50">
+    <header className="mx-auto flex max-w-6xl items-center gap-2 p-6 text-2xl font-extrabold text-brand-900">
+      <span className="grid h-10 w-10 place-items-center rounded-2xl bg-brand-600 text-white"><HeartPulse/></span>
+      CareVoice
+    </header>
+    <div className="mx-auto max-w-md px-6 pb-16 pt-8">
+      <Card>
+        <div className="text-center">
+          <h1 className="text-3xl font-extrabold text-brand-900">{mode==='login'?'Welcome back':'Create your account'}</h1>
+          <p className="mt-2 text-slate-500">{mode==='login'?'Sign in to continue with CareVoice':'Start your CareVoice recovery plan'}</p>
+        </div>
+
+        <form onSubmit={submit} className="mt-6 space-y-4">
+          {mode==='register'&&<input value={name} onChange={e=>setName(e.target.value)} required className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="Full name"/>}
+          <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="Email"/>
+          <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required minLength={8} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="Password (8+ characters)"/>
+          {mode==='register'&&<input type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} required minLength={8} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="Confirm password"/>}
+          {error&&<div className="rounded-2xl bg-rose-50 p-3 text-sm font-semibold text-rose-700">{error}</div>}
+          <button disabled={loading} className="btn w-full bg-brand-600 py-3 text-lg text-white hover:bg-brand-700">{loading?'Please wait�':mode==='login'?'Sign in':'Create account'}</button>
+        </form>
+
+        <button onClick={demo} disabled={loading} className="btn mt-3 w-full bg-amber-100 py-3 text-amber-800 hover:bg-amber-200">Try demo login</button>
+
+        <button onClick={()=>{setMode(mode==='login'?'register':'login');setError('')}} className="mt-4 w-full text-sm font-semibold text-brand-600">
+          {mode==='login'?'New to CareVoice? Create an account':'Already have an account? Sign in'}
+        </button>
+      </Card>
+      <div className="mt-6"><Disclaimer/></div>
+    </div>
+  </div>;
+}
 export default function App(){
-  const [doc,setDoc]=useState(null),[page,setPage]=useState('dashboard'),[lang,setLang]=useState('en'),[st,setSt]=useState({}),[now,setNow]=useState(nowMin()),[ex,setEx]=useState(null),[busy,setBusy]=useState(false);
+  const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem('carevoice_user')||'null')}catch{return null}}),[doc,setDoc]=useState(null),[page,setPage]=useState('dashboard'),[lang,setLang]=useState('en'),[st,setSt]=useState({}),[now,setNow]=useState(nowMin()),[ex,setEx]=useState(null),[busy,setBusy]=useState(false);
   useEffect(()=>{const i=setInterval(()=>setNow(nowMin()),30000);return()=>clearInterval(i)},[]);
   const tasks=useMemo(()=>doc?doc.tasks.map(t=>({...t,s:st[t.id]||(toMin(t.time)<now?'overdue':'pending')})):[],[doc,st,now]);
   const done=tasks.filter(t=>t.s==='done'),pending=tasks.filter(t=>t.s!=='done'),meds=tasks.filter(t=>t.type==='med');
   const next=pending.find(t=>toMin(t.time)>=now)||pending[0];
   const mark=(id,v='done')=>setSt(s=>({...s,[id]:v})),play=t=>speak(simplify(t,lang),lang);
   const upload=async f=>{setBusy(true);setDoc(await extractDocument(f));setBusy(false);setPage('documents')};
+  const logout=async()=>{const token=localStorage.getItem('carevoice_token');try{if(token)await logoutUser(token)}catch{} localStorage.removeItem('carevoice_token');localStorage.removeItem('carevoice_user');setUser(null);setDoc(null);setSt({})};
   const explain=async term=>{setEx({term,text:'…'});setEx({term,...await explainTerm(term)})};
-  if(!doc)return <Landing busy={busy} onDemo={()=>{setDoc(DEMO_DOC);setPage('dashboard')}} onUpload={upload}/>;
+  if(!user)return <AuthScreen onAuthenticated={setUser}/>;
+  if(!doc) return <Landing busy={busy} onDemo={()=>{setDoc(DEMO_DOC);setPage('dashboard')}} onUpload={upload}/>;
   const List=({items})=><div className="space-y-3">{items.map(t=><Task key={t.id} t={t} lang={lang} onDone={mark} onPlay={play}/>)}</div>;
   const Stat=({l,v,c})=><Card><p className="text-sm font-bold uppercase text-slate-400">{l}</p><p className={`text-4xl font-extrabold ${c}`}>{v}</p></Card>;
   const Warn=()=>doc.warnings.map(w=><div key={w.id} className="flex gap-3 rounded-3xl bg-rose-50 p-5 ring-1 ring-rose-200"><AlertTriangle className="h-8 w-8 shrink-0 text-rose-600"/><div><p className="text-xl font-bold text-rose-800">{w.simple}</p><p className="text-sm text-rose-700/70">Original: “{w.raw}”</p></div></div>);
@@ -137,3 +214,5 @@ export default function App(){
     <main className="mx-auto max-w-5xl p-5 pb-28 md:ml-64 md:p-8"><Page/><div className="mt-10"><Disclaimer/></div></main>
     {ex&&<div className="fixed inset-0 z-30 grid place-items-center bg-slate-900/40 p-4" onClick={()=>setEx(null)}><Card className="max-w-md" ><div className="flex justify-between"><h3 className="text-2xl font-extrabold capitalize">{ex.term}</h3><button onClick={()=>setEx(null)}><X/></button></div><p className="mt-3 text-xl">{ex.text}</p>
       {ex.found&&<p className="mt-2 text-xs text-slate-400">General explanation only. Follow your own discharge papers for your instructions.</p>}<button onClick={()=>speak(ex.text,'en')} className="btn mt-4 bg-sky-100 text-sky-800"><Volume2 className="h-5 w-5"/>Play Voice</button></Card></div>}</div>;}
+
+
