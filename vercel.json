@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://carevoice-backend-vx8v.onrender.com/api/:path*"
+    }
+  ]
+}
