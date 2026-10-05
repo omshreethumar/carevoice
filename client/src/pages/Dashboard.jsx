@@ -95,7 +95,7 @@ export default function Dashboard() {
         <div className="card flex gap-3 p-5">
           <Sparkles className="mt-0.5 text-brand-600" />
           <div>
-            <p className="text-sm font-semibold">Pocket AI insight</p>
+            <p className="text-sm font-semibold">CareVoice AI insight</p>
             <p className="mt-1 text-sm text-slate-600">{data.insights[0].message}</p>
           </div>
         </div>

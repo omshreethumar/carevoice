@@ -47,13 +47,13 @@ export default function AIAssistant() {
     }
   }
 
-  if (booting) return <Spinner label="Loading Pocket AI..." />;
+  if (booting) return <Spinner label="Loading CareVoice AI..." />;
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4">
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-bold">
-          <Sparkles className="text-brand-600" /> Pocket AI
+          <Sparkles className="text-brand-600" /> CareVoice AI
         </h1>
         <p className="text-sm text-slate-500">
           Answers use your live financial data. AI requests never leave the backend with your OpenAI key.
@@ -85,7 +85,7 @@ export default function AIAssistant() {
               </div>
             ))
           )}
-          {loading ? <p className="text-sm text-slate-400">Pocket AI is thinking...</p> : null}
+          {loading ? <p className="text-sm text-slate-400">CareVoice AI is thinking...</p> : null}
         </div>
         <form className="mt-4 flex gap-2" onSubmit={send}>
           <input className="input" placeholder="Ask about your money..." value={input} onChange={(e) => setInput(e.target.value)} />

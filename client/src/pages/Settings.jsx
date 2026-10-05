@@ -83,7 +83,7 @@ export default function Settings() {
         <p>
           Update name, currency, and savings targets on your <Link className="text-brand-700" to="/app/profile">profile</Link>.
         </p>
-        <p>Receipt scanning and Pocket AI require OPENAI_API_KEY on the server, never in frontend code.</p>
+        <p>Receipt scanning and CareVoice AI require OPENAI_API_KEY on the server, never in frontend code.</p>
         {loaded?.id ? <p className="text-xs text-slate-400">Tracker id {loaded.id}</p> : null}
       </div>
     </div>

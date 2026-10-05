@@ -43,7 +43,7 @@ export default function AppLayout() {
           </div>
           <div>
             <p className="text-sm font-bold text-slate-900">CareVoice</p>
-            <p className="text-xs text-slate-500">AI finance manager</p>
+            <p className="text-xs text-slate-500">AI financial assistant</p>
           </div>
         </div>
         <nav className="flex-1 space-y-1 px-3">
@@ -124,4 +124,3 @@ export default function AppLayout() {
     </div>
   );
 }
-
